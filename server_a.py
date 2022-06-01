@@ -10,6 +10,11 @@ s.listen(1)
 conn, addr = s.accept()
 print('Connected by', addr)
 while 1:
-    print("send all ...")
-    conn.sendall(b"a"*1024)
+    try:
+        print("send all ...")
+        conn.sendall(b"a"*1024)
+    except Exception as e:
+        print("BrokenPipeError:", e)
+        conn, addr = s.accept()
+        print('Connected by', addr)
 conn.close()
