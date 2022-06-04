@@ -37,7 +37,7 @@ def fan_out_thread(idx, socket):
             del b_clients[idx]
 
 
-def b_thread(socket: socket.socket):
+def run_server(socket: socket.socket):
     global b_client_id, b_clients
     print("running server on a seperate thread")
     while True:
@@ -70,9 +70,9 @@ def read_1k_from_socket(socket):
 def server(a_address: str, a_port: int, b_port: int):
     try:
         a_socket = open_read_only_socket(a_address, a_port)
-        b_socket = open_write_only_socket(b_port)
+        server_socket = open_write_only_socket(b_port)
 
-        server_thread = Thread(target=b_thread, args=(b_socket,))
+        server_thread = Thread(target=run_server, args=(server_socket,))
 
         server_thread.start()
         print("started server")
