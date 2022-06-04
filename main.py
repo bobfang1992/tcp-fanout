@@ -7,8 +7,8 @@ from threading import Thread, Lock
 from typing import List
 
 
-b_client_id = 0
-b_clients = {}
+client_id = 0
+clients = {}
 
 client_lock = Lock()
 
@@ -29,27 +29,27 @@ def open_write_only_socket(port):
 def fan_out_thread(idx, socket):
     while True:
         try:
-            q = b_clients[idx]
+            q = clients[idx]
             message = q.get()
             socket.sendall(message)
         except InterruptedError:
-            del b_clients[idx]
+            del clients[idx]
 
 
 def run_server(socket: socket.socket):
-    global b_client_id, b_clients
+    global client_id, clients
     print("running server on a seperate thread")
     while True:
         clientsocket, address = socket.accept()
         print("connected by", address)
 
         with client_lock:
-            b_clients[b_client_id] = queue.Queue()
+            clients[client_id] = queue.Queue()
 
             client_thread = Thread(target=fan_out_thread,
-                                   args=(b_client_id, clientsocket))
+                                   args=(client_id, clientsocket))
             client_thread.start()
-            b_client_id += 1
+            client_id += 1
 
 
 def read_1k_from_socket(socket):
@@ -78,8 +78,8 @@ def server(a_address: str, a_port: int, server_port: int):
         while True:
             message = read_1k_from_socket(a_socket)
             # print("mesage:", len(message))
-            for i in b_clients.keys():
-                client = b_clients[i]
+            for i in clients.keys():
+                client = clients[i]
                 client.put(message)
     except TimeoutError:
         raise
