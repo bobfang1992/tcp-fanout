@@ -29,7 +29,6 @@ def open_write_only_socket(port):
 def fan_out_thread(idx, socket):
     while True:
         try:
-            print(idx, b_clients)
             q = b_clients[idx]
             message = q.get()
             socket.sendall(message)
