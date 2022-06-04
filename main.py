@@ -66,13 +66,12 @@ def read_1k_from_socket(socket):
     return message
 
 
-def server(a_address: str, a_port: int, b_port: int):
+def server(a_address: str, a_port: int, server_port: int):
     try:
         a_socket = open_read_only_socket(a_address, a_port)
-        server_socket = open_write_only_socket(b_port)
+        server_socket = open_write_only_socket(server_port)
 
         server_thread = Thread(target=run_server, args=(server_socket,))
-
         server_thread.start()
         print("started server")
 
